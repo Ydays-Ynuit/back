@@ -9,8 +9,7 @@ Ynüit is an innovative messaging application, designed with the utmost concern 
 
 ## Requirements
 
-- [Git](https://www.git-scm.com/)
-- [Cargo](https://doc.rust-lang.org/cargo/) : ```v1.75.0```
+- [Cargo](https://doc.rust-lang.org/cargo/) : `v1.75.0`
 
 ## Installation
 
@@ -37,12 +36,26 @@ Then, enter in the project folder
 ### Install dependencies
 
 ```sh
+cargo install diesel_cli --no-default-features --features mysql
+```
+
+```sh
 cargo build
 ```
 
 ## Configuration
 
-<!-- TODO -->
+## Env
+
+Create a .env file at the root of the project
+
+and add this line :
+
+```sh
+DATABASE_URL=mysql://mysql_username:mysql_password@localhost/ynuit
+```
+
+Make sure to replace mysql_username by your mysql username and mysql_password by your mysql user password
 
 ## Use
 
