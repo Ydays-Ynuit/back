@@ -3,6 +3,7 @@ use actix_web::{web, HttpResponse, Responder};
 use log::info;
 use std::thread; // Import RegisterData correctly
 
+use crate::services::user_service;
 use crate::users::models::RegisterData;
 
 pub async fn test_get_handler() -> impl Responder {
@@ -21,10 +22,16 @@ pub async fn not_found() -> impl Responder {
     HttpResponse::NotFound().body("404 Not Found")
 }
 
-pub async fn register(pool: web::Data<DbPool>, form: web::Json<RegisterData>) -> impl Responder {
-    let conn = pool.get().expect("couldn't get db connection from pool");
+pub async fn register_handler(
+    pool: web::Data<DbPool>,
+    form: web::Json<RegisterData>,
+) -> impl Responder {
+    let mut conn = pool.get().expect("couldn't get db connection from pool");
 
-    match user_service::create_user(&conn, form.into_inner()) {
+    let register_data = form.into_inner();
+    print!("Registering user: {:?}", register_data);
+
+    match user_service::create_user(&mut *conn, register_data) {
         Ok(_) => HttpResponse::Ok().json("User created successfully"),
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
