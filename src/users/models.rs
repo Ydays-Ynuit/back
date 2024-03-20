@@ -12,14 +12,19 @@ pub struct NewUser {
 
 #[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct User {
-    pub id: i64,
+    pub id: u64,
     pub username: String,
-    pub password: String,
     pub public_key: String,
+    pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Queryable)]
 pub struct RegisterData {
+    pub username: String,
+    pub password: String,
+}
+#[derive(Debug, Serialize, Deserialize, Queryable)]
+pub struct LoginData {
     pub username: String,
     pub password: String,
 }

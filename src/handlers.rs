@@ -4,6 +4,7 @@ use log::info;
 use std::thread; // Import RegisterData correctly
 
 use crate::services::user_service;
+use crate::users::models::LoginData;
 use crate::users::models::RegisterData;
 
 pub async fn test_get_handler() -> impl Responder {
@@ -27,16 +28,25 @@ pub async fn register_handler(
     form: web::Json<RegisterData>,
 ) -> impl Responder {
     let mut conn = pool.get().expect("couldn't get db connection from pool");
-
     let register_data = form.into_inner();
-    print!("Registering user: {:?}", register_data);
 
     match user_service::create_user(&mut *conn, register_data) {
-        Ok(_) => HttpResponse::Ok().json("User created successfully"),
+        Ok(new_user) => HttpResponse::Ok().json(new_user), // Retourner l'utilisateur créé en JSON
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
+pub async fn login_handler(pool: web::Data<DbPool>, form: web::Json<LoginData>) -> impl Responder {
+    let mut conn = pool.get().expect("couldn't get db connection from pool");
+    let login_data = form.into_inner();
 
-// pub async fn login() -> impl Responder {
-//     HttpResponse::Ok().body("Login")
-// }
+    match user_service::login_user(&mut *conn, login_data) {
+        Ok((token, user)) => {
+            let login_response = serde_json::json!({
+                "token": token,
+                "user": user
+            });
+            HttpResponse::Ok().json(login_response) // Retourner le token et l'utilisateur en JSON
+        }
+        Err(_) => HttpResponse::Unauthorized().finish(),
+    }
+}
